@@ -1,0 +1,28 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+}
+
+plugins {
+    id 'groovy'
+    id 'maven'
+}
+
+group 'io.dotinc'
+version '0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+    testCompile gradleTestKit()
+    testCompile 'io.vertx:vertx-core:3.7.0'
+    testCompile 'io.vertx:vertx-web:3.7.0'
+    testCompile 'junit:junit:4.12'
+
+}
