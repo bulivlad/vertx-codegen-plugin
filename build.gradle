@@ -6,8 +6,10 @@ buildscript {
 }
 
 plugins {
+    id 'java-gradle-plugin'
     id 'groovy'
     id 'maven'
+    id 'com.gradle.plugin-publish' version '0.10.1'
 }
 
 group 'io.dotinc'
@@ -25,4 +27,21 @@ dependencies {
     testCompile 'io.vertx:vertx-web:3.7.0'
     testCompile 'junit:junit:4.12'
 
+}
+
+pluginBundle {
+    website = 'https://github.com/bulivlad/vertx-codegen-plugin'
+    vcsUrl = 'https://github.com/bulivlad/vertx-codegen-plugin'
+    tags = ["vertx", "vert.x", "reactive", "codegen", "codegen-java"]
+}
+
+gradlePlugin {
+    plugins {
+        vertxCodegenPlugin {
+            id = 'io.dotinc.vertx-codegen-plugin'
+            displayName = 'Vert.x Codegen Gradle Plugin'
+            description = 'A Gradle plugin to facilitate the codegen usage for Vert.x Java projects'
+            implementationClass = 'io.dotinc.gradle.CodeGenPlugin'
+        }
+    }
 }

@@ -1,0 +1,33 @@
+---
+version: 2
+jobs:
+  build:
+    machine:
+      enabled: true
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - gradle-cache
+
+      - run:
+          name: Gradle version
+          command: ./gradlew --version
+
+      - run:
+          name: Fetch dependencies
+          command: ./gradlew dependencies --refresh-dependencies
+
+      - run:
+          name: Run gradle build
+          command: ./gradlew clean build -x test --info --stacktrace
+
+      - run:
+          name: Run gradle install
+          command: ./gradlew install --info --stacktrace
+
+      - run:
+          name: Run gradle test
+          command: ./gradlew test --info --stacktrace

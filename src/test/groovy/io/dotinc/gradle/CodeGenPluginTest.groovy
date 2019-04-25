@@ -32,7 +32,7 @@ class CodeGenPluginTest {
                 "       classpath \"io.dotinc:vertx-codegen-plugin:0+\"\n" +
                 "   }\n" +
                 "}\n" +
-                "apply plugin:'io.dotinc.codegen-plugin'\n" +
+                "apply plugin:'io.dotinc.vertx-codegen-plugin'\n" +
                 "apply plugin: 'groovy'\n" +
                 "apply plugin: 'java'\n" +
                 "repositories {\n" +
