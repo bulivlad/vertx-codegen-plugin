@@ -24,13 +24,13 @@ class CodeGenPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         def extension = project.extensions.create('codeGen', CodeGenPluginExtension)
-        List<Dependency> dependencies = DependenciesUtil.buildDependenciesList(gradleMajor > 4 ? "gradle" + gradleMajor :"gradle")
+        List<Dependency> dependencies = DependenciesUtil.buildDependenciesList(gradleMajor > 4 ? "gradle" + gradleMajor : "gradle")
 
         project.afterEvaluate {
 
             def isJavaPlugin = project.plugins.hasPlugin(JavaPlugin.class)
-            if(!isJavaPlugin) {
-                throw new GradleException("Script to be used only for java projects. java plugin needs to be applied");
+            if (!isJavaPlugin) {
+                throw new GradleException("Script to be used only for java projects. java plugin needs to be applied")
             }
             project.plugins.withType(JavaPlugin.class, new Action<JavaPlugin>() {
                 void execute(JavaPlugin javaPlugin) {
@@ -42,19 +42,6 @@ class CodeGenPlugin implements Plugin<Project> {
                         println dep.toPrettyString()
                         addDependency(project, dep)
                     }
-
-//                    Dependency vertxCore = new Dependency('compileOnly', 'io.vertx', 'vertx-core', "${vertxVersion}")
-//                    addDependency(project, vertxCore)
-//
-//                    Dependency vertxServiceProxy = new Dependency('compileOnly', 'io.vertx', 'vertx-service-proxy', "${vertxVersion}")
-//                    addDependency(project, vertxServiceProxy)
-//                    vertxServiceProxy.setConfiguration('annotationProcessor').setSpecialization('processor')
-//                    addDependency(project, vertxServiceProxy)
-//
-//                    Dependency vertxCodeGen = new Dependency('compileOnly', 'io.vertx', 'vertx-codegen', "${vertxVersion}")
-//                    addDependency(project, vertxCodeGen)
-//                    vertxCodeGen.setConfiguration('annotationProcessor').setSpecialization('processor')
-//                    addDependency(project, vertxCodeGen)
 
                     project.sourceSets {
                         main {
@@ -102,26 +89,23 @@ class CodeGenPlugin implements Plugin<Project> {
     }
 
     private boolean dependencyExists(Project project, String configName, String dependency) {
-        project.configurations?.getByName(configName)?.dependencies?.any {it -> it.name.contains(dependency) }
+        project.configurations?.getByName(configName)?.dependencies?.any { it -> it.name.contains(dependency) }
     }
 
     private String getDependencyVersion(Project project, String dependency) {
         def vertxConfiguredVersion = project.extensions.getByName("codeGen").vertxVersion
-        if(!StringUtil.isEmpty(vertxConfiguredVersion)) {
-            return vertxConfiguredVersion
-        }
 
         def maybeVersion = project.configurations.collect { it -> it.dependencies }
                 .find { it -> it.name.contains(dependency) }
-        if(maybeVersion == null){
-            return vertxVersion
+        if (maybeVersion == null) {
+            return vertxConfiguredVersion
         }
-        return StringUtil.isEmpty(maybeVersion.first().version) ? vertxVersion : maybeVersion.first().version
+        return StringUtil.isEmpty(maybeVersion.first().version) ? vertxConfiguredVersion : maybeVersion.first().version
     }
 
 
     private String getGeneratedPath(CodeGenPluginExtension extension) {
-        if(extension.generatedDirs.endsWith('/')){
+        if (extension.generatedDirs.endsWith('/')) {
             return extension.generatedDirs + extension.generationPath
         }
         return extension.generatedDirs + '/' + extension.generationPath
