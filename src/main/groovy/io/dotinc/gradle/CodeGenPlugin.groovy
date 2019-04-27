@@ -1,6 +1,7 @@
 package io.dotinc.gradle
 
 import io.dotinc.gradle.model.Dependency
+import io.dotinc.gradle.util.DependenciesUtil
 import io.dotinc.gradle.util.StringUtil
 import org.gradle.api.Action
 import org.gradle.api.GradleException
@@ -9,6 +10,7 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.DependencyResolutionListener
 import org.gradle.api.artifacts.ResolvableDependencies
 import org.gradle.api.plugins.JavaPlugin
+import org.gradle.util.GradleVersion
 
 /**
  * @author vladclaudiubulimac on 2019-04-24.
@@ -16,34 +18,30 @@ import org.gradle.api.plugins.JavaPlugin
 class CodeGenPlugin implements Plugin<Project> {
 
     def vertxVersion
+    def gradleVersion = GradleVersion.current().version
+    def gradleMajor = gradleVersion.split('\\.')[0] as Integer
 
     @Override
     void apply(Project project) {
         def extension = project.extensions.create('codeGen', CodeGenPluginExtension)
-        vertxVersion = extension.vertxVersion
+        List<Dependency> dependencies = DependenciesUtil.buildDependenciesList(gradleMajor > 4 ? "gradle" + gradleMajor : "gradle")
 
         project.afterEvaluate {
 
             def isJavaPlugin = project.plugins.hasPlugin(JavaPlugin.class)
-            if(!isJavaPlugin) {
-                throw new GradleException("Script to be used only for java projects. java plugin needs to be applied");
+            if (!isJavaPlugin) {
+                throw new GradleException("Script to be used only for java projects. java plugin needs to be applied")
             }
             project.plugins.withType(JavaPlugin.class, new Action<JavaPlugin>() {
                 void execute(JavaPlugin javaPlugin) {
                     vertxVersion = getDependencyVersion(project, "vertx-core")
 
-                    Dependency vertxCore = new Dependency('io.vertx', 'vertx-core', "${vertxVersion}", 'compileOnly')
-                    addDependency(project, vertxCore)
-
-                    Dependency vertxServiceProxy = new Dependency('io.vertx', 'vertx-service-proxy', "${vertxVersion}", 'compileOnly')
-                    addDependency(project, vertxServiceProxy)
-                    vertxServiceProxy.setConfiguration('annotationProcessor').setSpecialization('processor')
-                    addDependency(project, vertxServiceProxy)
-
-                    Dependency vertxCodeGen = new Dependency('io.vertx', 'vertx-codegen', "${vertxVersion}", 'compileOnly')
-                    addDependency(project, vertxCodeGen)
-                    vertxCodeGen.setConfiguration('annotationProcessor').setSpecialization('processor')
-                    addDependency(project, vertxCodeGen)
+                    println "adding following dependencies to the project :"
+                    dependencies.each { dep ->
+                        dep.setVersion(vertxVersion)
+                        println dep.toPrettyString()
+                        addDependency(project, dep)
+                    }
 
                     project.sourceSets {
                         main {
@@ -91,21 +89,23 @@ class CodeGenPlugin implements Plugin<Project> {
     }
 
     private boolean dependencyExists(Project project, String configName, String dependency) {
-        project.configurations?.getByName(configName)?.dependencies?.any {it -> it.name.contains(dependency) }
+        project.configurations?.getByName(configName)?.dependencies?.any { it -> it.name.contains(dependency) }
     }
 
     private String getDependencyVersion(Project project, String dependency) {
+        def vertxConfiguredVersion = project.extensions.getByName("codeGen").vertxVersion
+
         def maybeVersion = project.configurations.collect { it -> it.dependencies }
                 .find { it -> it.name.contains(dependency) }
-        if(maybeVersion == null){
-            return vertxVersion
+        if (maybeVersion == null) {
+            return vertxConfiguredVersion
         }
-        return StringUtil.isEmpty(maybeVersion.first().version) ? vertxVersion : maybeVersion.first().version
+        return StringUtil.isEmpty(maybeVersion.first().version) ? vertxConfiguredVersion : maybeVersion.first().version
     }
 
 
     private String getGeneratedPath(CodeGenPluginExtension extension) {
-        if(extension.generatedDirs.endsWith('/')){
+        if (extension.generatedDirs.endsWith('/')) {
             return extension.generatedDirs + extension.generationPath
         }
         return extension.generatedDirs + '/' + extension.generationPath
