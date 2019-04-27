@@ -6,7 +6,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 
-import static junit.framework.Assert.assertTrue
+import static org.junit.Assert.assertTrue
 
 /**
  * @author vladclaudiubulimac on 2019-04-25.

@@ -1,27 +1,29 @@
 package io.dotinc.gradle.model
 
+import io.dotinc.gradle.util.StringUtil
+
 /**
  * @author vladclaudiubulimac on 2019-04-25.
  */
 class Dependency {
 
+    private String configuration
     private String group
     private String name
-    private String configuration
     private String version
     private String specialization
 
-    Dependency(String group, String name, String version, String configuration) {
+    Dependency(String configuration, String group, String name, String version) {
+        this.configuration = configuration
         this.group = group
         this.name = name
-        this.configuration = configuration
         this.version = version
     }
 
-    Dependency(String group, String name, String version, String specialization, String configuration) {
+    Dependency(String configuration, String group, String name, String version, String specialization) {
+        this.configuration = configuration
         this.group = group
         this.name = name
-        this.configuration = configuration
         this.version = version
         this.specialization = specialization
     }
@@ -77,5 +79,9 @@ class Dependency {
         }
 
         return group + ":" + name + ":" + version
+    }
+
+    String toPrettyString() {
+        return configuration + " ('" + toDependencyString() + "')"
     }
 }

@@ -1,6 +1,7 @@
 package io.dotinc.gradle
 
 import io.dotinc.gradle.model.Dependency
+import io.dotinc.gradle.util.DependenciesUtil
 import io.dotinc.gradle.util.StringUtil
 import org.gradle.api.Action
 import org.gradle.api.GradleException
@@ -9,6 +10,7 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.DependencyResolutionListener
 import org.gradle.api.artifacts.ResolvableDependencies
 import org.gradle.api.plugins.JavaPlugin
+import org.gradle.util.GradleVersion
 
 /**
  * @author vladclaudiubulimac on 2019-04-24.
@@ -16,11 +18,13 @@ import org.gradle.api.plugins.JavaPlugin
 class CodeGenPlugin implements Plugin<Project> {
 
     def vertxVersion
+    def gradleVersion = GradleVersion.current().version
+    def gradleMajor = gradleVersion.split('\\.')[0] as Integer
 
     @Override
     void apply(Project project) {
         def extension = project.extensions.create('codeGen', CodeGenPluginExtension)
-        vertxVersion = extension.vertxVersion
+        List<Dependency> dependencies = DependenciesUtil.buildDependenciesList(gradleMajor > 4 ? "gradle" + gradleMajor :"gradle")
 
         project.afterEvaluate {
 
@@ -32,18 +36,25 @@ class CodeGenPlugin implements Plugin<Project> {
                 void execute(JavaPlugin javaPlugin) {
                     vertxVersion = getDependencyVersion(project, "vertx-core")
 
-                    Dependency vertxCore = new Dependency('io.vertx', 'vertx-core', "${vertxVersion}", 'compileOnly')
-                    addDependency(project, vertxCore)
+                    println "adding following dependencies to the project :"
+                    dependencies.each { dep ->
+                        dep.setVersion(vertxVersion)
+                        println dep.toPrettyString()
+                        addDependency(project, dep)
+                    }
 
-                    Dependency vertxServiceProxy = new Dependency('io.vertx', 'vertx-service-proxy', "${vertxVersion}", 'compileOnly')
-                    addDependency(project, vertxServiceProxy)
-                    vertxServiceProxy.setConfiguration('annotationProcessor').setSpecialization('processor')
-                    addDependency(project, vertxServiceProxy)
-
-                    Dependency vertxCodeGen = new Dependency('io.vertx', 'vertx-codegen', "${vertxVersion}", 'compileOnly')
-                    addDependency(project, vertxCodeGen)
-                    vertxCodeGen.setConfiguration('annotationProcessor').setSpecialization('processor')
-                    addDependency(project, vertxCodeGen)
+//                    Dependency vertxCore = new Dependency('compileOnly', 'io.vertx', 'vertx-core', "${vertxVersion}")
+//                    addDependency(project, vertxCore)
+//
+//                    Dependency vertxServiceProxy = new Dependency('compileOnly', 'io.vertx', 'vertx-service-proxy', "${vertxVersion}")
+//                    addDependency(project, vertxServiceProxy)
+//                    vertxServiceProxy.setConfiguration('annotationProcessor').setSpecialization('processor')
+//                    addDependency(project, vertxServiceProxy)
+//
+//                    Dependency vertxCodeGen = new Dependency('compileOnly', 'io.vertx', 'vertx-codegen', "${vertxVersion}")
+//                    addDependency(project, vertxCodeGen)
+//                    vertxCodeGen.setConfiguration('annotationProcessor').setSpecialization('processor')
+//                    addDependency(project, vertxCodeGen)
 
                     project.sourceSets {
                         main {
@@ -95,6 +106,11 @@ class CodeGenPlugin implements Plugin<Project> {
     }
 
     private String getDependencyVersion(Project project, String dependency) {
+        def vertxConfiguredVersion = project.extensions.getByName("codeGen").vertxVersion
+        if(!StringUtil.isEmpty(vertxConfiguredVersion)) {
+            return vertxConfiguredVersion
+        }
+
         def maybeVersion = project.configurations.collect { it -> it.dependencies }
                 .find { it -> it.name.contains(dependency) }
         if(maybeVersion == null){
