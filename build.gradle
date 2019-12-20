@@ -13,19 +13,19 @@ plugins {
 }
 
 group 'io.dotinc'
-version '0.0.2-SNAPSHOT'
+version '0.0.2'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compile gradleApi()
-    compile localGroovy()
-    testCompile gradleTestKit()
-    testCompile 'io.vertx:vertx-core:3.7.0'
-    testCompile 'io.vertx:vertx-web:3.7.0'
-    testCompile 'junit:junit:4.12'
+    implementation gradleApi()
+    implementation localGroovy()
+    testImplementation gradleTestKit()
+    testImplementation 'io.vertx:vertx-core:3.8.4'
+    testImplementation 'io.vertx:vertx-web:3.8.4'
+    testImplementation 'junit:junit:4.12'
 
 }
 
