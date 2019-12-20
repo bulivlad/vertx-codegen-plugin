@@ -5,7 +5,7 @@ package io.dotinc.gradle
  */
 class CodeGenPluginExtension {
 
-    String vertxVersion = '3.7.0'
+    String vertxVersion = '3.8.4'
     String generatedDirs = "src/main/generated"
     String generationPath = "proxy"
 

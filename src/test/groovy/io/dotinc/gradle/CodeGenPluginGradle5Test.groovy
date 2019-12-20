@@ -48,11 +48,11 @@ class CodeGenPluginGradle5Test {
                 .build()
 
         assertTrue(runner.output.contains('adding following dependencies to the project :'))
-        assertTrue(runner.output.contains("compileOnly ('io.vertx:vertx-core:3.7.0')"))
-        assertTrue(runner.output.contains("compileOnly ('io.vertx:vertx-service-proxy:3.7.0')"))
-        assertTrue(runner.output.contains("annotationProcessor ('io.vertx:vertx-service-proxy:3.7.0:processor')"))
-        assertTrue(runner.output.contains("compileOnly ('io.vertx:vertx-codegen:3.7.0')"))
-        assertTrue(runner.output.contains("annotationProcessor ('io.vertx:vertx-codegen:3.7.0:processor')"))
+        assertTrue(runner.output.contains("compileOnly ('io.vertx:vertx-core:3.8.4')"))
+        assertTrue(runner.output.contains("compileOnly ('io.vertx:vertx-service-proxy:3.8.4')"))
+        assertTrue(runner.output.contains("annotationProcessor ('io.vertx:vertx-service-proxy:3.8.4:processor')"))
+        assertTrue(runner.output.contains("compileOnly ('io.vertx:vertx-codegen:3.8.4')"))
+        assertTrue(runner.output.contains("annotationProcessor ('io.vertx:vertx-codegen:3.8.4:processor')"))
         assertTrue(runner.output.contains('BUILD SUCCESSFUL'))
     }
 
