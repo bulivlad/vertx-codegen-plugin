@@ -25,8 +25,8 @@ jobs:
           command: ./gradlew clean build -x test --info --stacktrace
 
       - run:
-          name: Run gradle install
-          command: ./gradlew install --info --stacktrace
+          name: Run gradle publishToMavenLocal
+          command: ./gradlew publishToMavenLocal --info --stacktrace
 
       - run:
           name: Run gradle test
