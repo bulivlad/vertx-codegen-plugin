@@ -20,6 +20,7 @@ class DependencyList {
         gradleDependencies.add('compile:io.vertx:vertx-service-proxy:${version}:processor')
         gradleDependencies.add('compile:io.vertx:vertx-codegen:${version}:processor')
 
+        dependencies.put("gradle6", gradle5Dependencies)
         dependencies.put("gradle5", gradle5Dependencies)
         dependencies.put("gradle", gradleDependencies)
     }
