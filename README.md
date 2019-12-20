@@ -44,7 +44,7 @@ codeGen {
 ### Configuration
 | Options | Description | Default value |
 | ------------- | :------------- | :-----|
-| vertxVersion | The vert.x library version | 3.7.0 |
+| vertxVersion | The vert.x library version | 3.8.4 |
 | generatedDirs | The path to the generated java classes. The path is relative to the project root | "src/main/generated" |
 | generationPath | The specific path to the generated java class | "proxy" |
 
