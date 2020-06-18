@@ -95,12 +95,13 @@ class CodeGenPlugin implements Plugin<Project> {
     private String getDependencyVersion(Project project, String dependency) {
         def vertxConfiguredVersion = project.extensions.getByName("codeGen").vertxVersion
 
-        def maybeVersion = project.configurations.collect { it -> it.dependencies }
-                .find { it -> it.name.contains(dependency) }
+        def maybeVersion = project.configurations.collect { it.dependencies }
+                .flatten()
+                .find { it.name == dependency }
         if (maybeVersion == null) {
             return vertxConfiguredVersion
         }
-        return StringUtil.isEmpty(maybeVersion.first().version) ? vertxConfiguredVersion : maybeVersion.first().version
+        return StringUtil.isEmpty(maybeVersion.version) ? vertxConfiguredVersion : maybeVersion.version
     }
 
 
